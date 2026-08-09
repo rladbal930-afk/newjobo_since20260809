@@ -98,6 +98,22 @@ export const DeployGuideModal: React.FC<DeployGuideModalProps> = ({ isOpen, onCl
             </p>
           </div>
 
+          {/* TROUBLESHOOTING: Netlify & Google Permissions */}
+          <div className="bg-amber-50/90 p-5 rounded-xl border border-amber-200 space-y-2.5 text-amber-950 text-xs">
+            <div className="flex items-center gap-2 font-bold text-sm text-amber-900">
+              <ShieldCheck className="w-4 h-4 text-amber-700" />
+              <span>🚨 넷리파이 접속 시 "권한이 없습니다" 오류 해결 안내</span>
+            </div>
+            <ul className="list-disc list-inside space-y-1.5 leading-relaxed text-amber-900">
+              <li>
+                <b>Netlify 사이트 비번/접근 제한 해제:</b> Netlify 대시보드 → <code>Site configuration</code> → <code>Site protection</code> 메뉴에서 Visitor access를 <b>Public</b>으로 설정하거나 Password를 해제하세요.
+              </li>
+              <li>
+                <b>구글 스크립트 실행 권한 확인:</b> 구글 앱스 스크립트 배포 시 [다음 사용자로 실행]을 <b>'나(Me)'</b>로 지정하고, [액세스 권한이 있는 사용자]를 <b>'모든 사용자(Anyone)'</b>로 배포하셔야 일반 교인분들이 로그인 없이 주보 데이터를 보실 수 있습니다.
+              </li>
+            </ul>
+          </div>
+
           <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
             <span>Netlify는 SSL 보안 인증서(https)와 고성능 글로벌 CDN을 무료로 제공하여 스마트폰 카카오톡 공유 시 아주 빠르게 열립니다.</span>

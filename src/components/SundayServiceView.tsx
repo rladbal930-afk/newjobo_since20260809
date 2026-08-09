@@ -10,20 +10,10 @@ interface SundayServiceViewProps {
 }
 
 export const openGospelApp = (songTitle: string) => {
-  const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera || '';
-  const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
-  const isAndroid = /android/i.test(userAgent);
-
-  const playStoreUrl = `https://play.google.com/store/search?q=${encodeURIComponent('천년복음방송')}&c=apps`;
-  const appStoreUrl = `https://apps.apple.com/kr/search?term=${encodeURIComponent('천년복음방송')}`;
-
-  if (isIOS) {
-    window.location.href = appStoreUrl;
-  } else if (isAndroid) {
-    window.location.href = playStoreUrl;
-  } else {
-    window.open(playStoreUrl, '_blank');
-  }
+  // 곡 제목에서 번호 및 접두사를 정리하여 검색어 생성
+  const cleanTitle = songTitle.replace(/^[0-9]+\.\s*/, '').trim();
+  const query = encodeURIComponent(`${cleanTitle} 찬양`);
+  window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
 };
 
 export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
@@ -35,10 +25,10 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
   const [isScriptureExpanded, setIsScriptureExpanded] = useState<boolean>(true);
 
   // Servant details from Main Sheet row or fallback to content
-  const heroPreacher = content.preacher || '주영애 목사';
-  const heroPresider = mainRow?.presider || content.presider || '정순정 강도사';
-  const heroPrayer = mainRow?.prayer || content.prayer || '조금옥 권사';
-  const heroOffering = mainRow?.offering || content.offeringServant || '홍정주 집사';
+  const heroPreacher = content.preacher || '로딩중...';
+  const heroPresider = mainRow?.presider || content.presider || '로딩중...';
+  const heroPrayer = mainRow?.prayer || content.prayer || '로딩중...';
+  const heroOffering = mainRow?.offering || content.offeringServant || '로딩중...';
 
   // Extract praise songs by category
   const prepPraiseSongs = content.praiseSongs.filter(s => s.category === '준비찬양');
@@ -121,7 +111,7 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
                     <button
                       onClick={() => openGospelApp(song.title)}
                       className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-semibold shadow-xs transition-transform active:scale-95"
-                      title="[천년복음방송] 앱에서 찬양 듣기"
+                      title="[유튜브] 찬양 듣기"
                     >
                       <Volume2 className="w-3.5 h-3.5 text-amber-300" />
                       <span>찬양듣기</span>

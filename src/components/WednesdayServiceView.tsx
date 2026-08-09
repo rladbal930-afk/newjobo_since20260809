@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BulletinContent } from '../types';
 import { Music, BookOpen, Calendar, Volume2, ChevronDown, ChevronUp, Sparkles, Clock, MapPin } from 'lucide-react';
+import { openGospelApp } from './SundayServiceView';
 
 interface WednesdayServiceViewProps {
   content?: BulletinContent;
@@ -48,7 +49,7 @@ export const WednesdayServiceView: React.FC<WednesdayServiceViewProps> = ({ cont
             <span>비전홀 (대예배실)</span>
           </div>
           <div>
-            <span className="text-indigo-300 font-semibold">설교/사회:</span> {content.preacher || '이성민 부목사'}
+            <span className="text-indigo-300 font-semibold">설교/사회:</span> {content.preacher || '로딩중...'}
           </div>
         </div>
       </div>
@@ -87,11 +88,9 @@ export const WednesdayServiceView: React.FC<WednesdayServiceViewProps> = ({ cont
                   </div>
 
                   <button
-                    onClick={() => {
-                      const query = encodeURIComponent(`${song.title} 찬양`);
-                      window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
-                    }}
+                    onClick={() => openGospelApp(song.title)}
                     className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-semibold shadow-xs transition-transform active:scale-95"
+                    title="[천년복음방송] 앱에서 찬양 듣기"
                   >
                     <Volume2 className="w-3.5 h-3.5 text-amber-300" />
                     <span>듣기</span>

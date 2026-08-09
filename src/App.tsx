@@ -201,6 +201,16 @@ export default function App() {
           </div>
         )}
 
+        {/* Loading Indicator Notification */}
+        {isFetching && (
+          <div className="max-w-5xl mx-auto px-4 mt-4">
+            <div className="bg-amber-50 border border-amber-200 text-amber-900 px-4 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium shadow-xs animate-pulse">
+              <div className="w-4 h-4 border-2 border-amber-600 border-t-transparent rounded-full animate-spin shrink-0"></div>
+              <span>구글 시트에서 주보 데이터를 불러오는 중입니다 (로딩중...)</span>
+            </div>
+          </div>
+        )}
+
         {/* Main Content Area */}
         <main className="max-w-5xl mx-auto px-4 pt-6 sm:pt-8">
           {activeTab === 'sunday' && (
