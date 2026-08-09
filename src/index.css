@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+:root {
+  --primary: #1e3a8a;
+  --accent: #4338ca;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --bg: #f8fafc;
+  --white: #ffffff;
+  --border: #e2e8f0;
+}
+
+@layer base {
+  body {
+    font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg);
+    color: var(--text-main);
+  }
+  
+  .font-serif {
+    font-family: 'Gowun Batang', 'Georgia', 'Noto Serif KR', serif;
+  }
+}
+
+/* Sleek Interface Custom Classes */
+.sleek-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #64748b;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sleek-section-title::after {
+  content: '';
+  height: 1px;
+  flex: 1;
+  background: #e2e8f0;
+}
+
+.sleek-praise-badge {
+  background-color: #eef2ff;
+  color: #4338ca;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  border: 1px solid #c7d2fe;
+  display: inline-block;
+}
+
+.sleek-verse-box {
+  background: #f1f5f9;
+  padding: 20px 24px;
+  border-radius: 12px;
+  border-left: 4px solid #1e3a8a;
+}
+
+/* Paper Print Optimization */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+    font-size: 11pt;
+  }
+
+  @page {
+    margin: 10mm;
+    size: A4 portrait;
+  }
+
+  .sleek-praise-badge {
+    border: 1px solid #000;
+    background: none;
+    color: #000;
+  }
+}

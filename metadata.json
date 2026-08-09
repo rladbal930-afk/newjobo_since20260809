@@ -1,0 +1,6 @@
+{
+  "name": "스마트 교회 주보",
+  "description": "구글 시트 연동 반응형 모바일 스마트 교회 주보 웹 애플리케이션",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
