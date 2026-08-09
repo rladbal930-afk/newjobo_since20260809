@@ -57,7 +57,7 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
       serviceDate: '주일예배',
       serviceType: '주일예배',
       worshipTitle: '로딩중...',
-      preacher: '로딩중...',
+      preacher: '주영애 목사',
       presider: '로딩중...',
       prayer: '로딩중...',
       offeringServant: '로딩중...',

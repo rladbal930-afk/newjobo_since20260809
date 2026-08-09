@@ -25,7 +25,7 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
   const [isScriptureExpanded, setIsScriptureExpanded] = useState<boolean>(true);
 
   // Servant details from Main Sheet row or fallback to content
-  const heroPreacher = content.preacher || '로딩중...';
+  const heroPreacher = (content.preacher && content.preacher !== '로딩중...') ? content.preacher : '주영애 목사';
   const heroPresider = mainRow?.presider || content.presider || '로딩중...';
   const heroPrayer = mainRow?.prayer || content.prayer || '로딩중...';
   const heroOffering = mainRow?.offering || content.offeringServant || '로딩중...';
