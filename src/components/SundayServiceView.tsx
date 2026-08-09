@@ -34,6 +34,21 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
   const prepPraiseSongs = content.praiseSongs.filter(s => s.category === '준비찬양');
   const otherPraiseSongs = content.praiseSongs.filter(s => s.category !== '준비찬양');
 
+  // Helper to extract clean scripture title
+  const getScriptureTitle = () => {
+    if (content.scripture && content.scripture !== '로딩중...') {
+      return content.scripture;
+    }
+    if (content.scriptureText && content.scriptureText !== '로딩중...') {
+      const rawFirstLine = content.scriptureText.split('\n')[0].trim();
+      const cleanRef = rawFirstLine.replace(/[<>]/g, '').trim();
+      if (cleanRef && cleanRef.length < 40) {
+        return cleanRef;
+      }
+    }
+    return '성경 본문';
+  };
+
   // Font size class mapper
   const getFontSizeClass = () => {
     switch (fontSize) {
@@ -135,16 +150,16 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
 
             <div className="divide-y divide-slate-100 text-sm">
               <div className="py-2.5 flex items-center justify-between bg-indigo-50/60 -mx-3 px-3 rounded-lg border border-indigo-100/80">
-                <span className="font-bold text-indigo-950 flex items-center gap-2">
+                <span className="font-medium text-indigo-950 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-indigo-700" />
                   준비 찬양
                 </span>
-                <span className="text-indigo-900 font-bold text-right">찬양단</span>
+                <span className="text-indigo-900 font-medium text-right">찬양단</span>
               </div>
 
               <div className="py-2.5 flex items-center justify-between">
                 <span className="font-medium text-slate-600">묵도</span>
-                <span className="text-slate-900 font-bold text-right">다같이</span>
+                <span className="text-slate-900 font-medium text-right">다같이</span>
               </div>
 
               <div className="py-2.5 flex items-center justify-between">
@@ -173,11 +188,11 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
 
               <div className="py-2.5 flex items-center justify-between">
                 <span className="font-medium text-slate-600">성경 봉독</span>
-                <span className="text-indigo-900 font-bold">사회자</span>
+                <span className="text-slate-900 font-medium">사회자</span>
               </div>
 
               <div className="py-2.5 flex items-center justify-between bg-amber-50/80 -mx-3 px-3 rounded-lg border border-amber-200/50">
-                <span className="font-bold text-amber-900">설교</span>
+                <span className="font-medium text-amber-900">설교</span>
                 <span className="text-amber-950 font-bold">{heroPreacher}</span>
               </div>
 
@@ -188,7 +203,7 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
 
               <div className="py-2.5 flex items-center justify-between">
                 <span className="font-medium text-slate-600">봉헌 기도</span>
-                <span className="text-slate-900 font-bold">설교자</span>
+                <span className="text-slate-900 font-medium">설교자</span>
               </div>
 
               <div className="py-2.5 flex items-center justify-between">
@@ -198,7 +213,7 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
 
               <div className="py-2.5 flex items-center justify-between">
                 <span className="font-medium text-slate-600">* 축도</span>
-                <span className="text-slate-900 font-bold">설교자</span>
+                <span className="text-slate-900 font-medium">설교자</span>
               </div>
             </div>
 
@@ -247,7 +262,7 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
             <div className="sleek-verse-box">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-bold text-blue-950 text-base font-serif">
-                  {content.scripture || '성경 본문'}
+                  {getScriptureTitle()}
                 </span>
                 <button
                   onClick={() => setIsScriptureExpanded(!isScriptureExpanded)}

@@ -28,7 +28,7 @@ export const defaultBulletinData: FullBulletinData = {
     preacher: '주영애 목사',
     presider: '로딩중...',
     prayer: '로딩중...',
-    scripture: '로딩중...',
+    scripture: '성경 본문',
     scriptureText: '구글 시트에서 주보 데이터를 불러오는 중입니다 (로딩중...)',
     sermonTitle: '로딩중...',
     praiseSongs: [

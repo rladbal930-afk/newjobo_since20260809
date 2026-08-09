@@ -61,7 +61,7 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
       presider: '로딩중...',
       prayer: '로딩중...',
       offeringServant: '로딩중...',
-      scripture: '로딩중...',
+      scripture: '성경 본문',
       scriptureText: '구글 시트에서 주보 데이터를 불러오는 중입니다 (로딩중...)',
       praiseSongs: [
         { category: '준비찬양', songNumber: '준비찬양 1', title: '로딩중...' },
@@ -247,9 +247,12 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
             sundayContent.scriptureText = detail;
           } else {
             sundayContent.scriptureText = value;
-            if (!sundayContent.scripture) {
-              const firstLine = value.split('\n')[0];
-              sundayContent.scripture = firstLine.length < 35 ? firstLine : '성경 본문';
+            const rawFirstLine = value.split('\n')[0].trim();
+            const cleanRef = rawFirstLine.replace(/[<>]/g, '').trim();
+            if (cleanRef && cleanRef.length < 40) {
+              sundayContent.scripture = cleanRef;
+            } else if (!sundayContent.scripture || sundayContent.scripture === '로딩중...') {
+              sundayContent.scripture = '성경 본문';
             }
           }
         }
