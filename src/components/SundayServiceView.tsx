@@ -159,7 +159,7 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
 
               <div className="py-2.5 flex items-center justify-between">
                 <span className="font-medium text-slate-600">묵도</span>
-                <span className="text-slate-900 font-medium text-right">다같이</span>
+                <span className="text-slate-900 font-bold text-right">{heroPresider}</span>
               </div>
 
               <div className="py-2.5 flex items-center justify-between">

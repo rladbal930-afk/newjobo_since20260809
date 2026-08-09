@@ -126,27 +126,40 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
         const offering = offeringIdx !== -1 ? row[offeringIdx] : row[4];
         const praiseLeader = praiseLeaderIdx !== -1 ? row[praiseLeaderIdx] : row[5];
 
+        const dateFormatted = formatDateString(rawDate || '');
+        const rawTypeStr = (rawType || '').toString().trim();
+        const isWed = rawTypeStr.includes('수요') || dateFormatted.includes('수요일') || dateFormatted.includes('수)');
+        const serviceTypeResolved = isWed ? '수요예배' : '주일예배';
+
         return {
-          date: formatDateString(rawDate || ''),
-          serviceType: (rawType || '주일예배').toString().trim(),
+          date: dateFormatted,
+          serviceType: serviceTypeResolved,
           presider: (presider || '').toString().trim(),
           prayer: (prayer || '').toString().trim(),
           offering: (offering || '').toString().trim(),
           praiseLeader: (praiseLeader || '').toString().trim(),
-          wedPresider: (rawType || '').toString().includes('수요') ? (presider || '').toString().trim() : ''
+          wedPresider: isWed ? (presider || '').toString().trim() : ''
         };
       }).filter((m: MainSheetRow) => m.date || m.presider);
 
     } else {
-      mainInfo = rawMain.map((row: any) => ({
-        date: formatDateString(row['날짜'] || row['일자'] || row['date'] || ''),
-        serviceType: row['예배유형'] || row['구분'] || row['serviceType'] || '주일예배',
-        presider: row['사회자'] || row['사회'] || row['presider'] || '',
-        prayer: row['기도자'] || row['대표기도'] || row['prayer'] || '',
-        offering: row['봉헌위원'] || row['봉헌자'] || row['봉헌'] || row['offering'] || '',
-        praiseLeader: row['찬양인도자'] || row['찬양인도'] || row['praiseLeader'] || '',
-        wedPresider: row['수요사회자'] || row['수요사회'] || row['wedPresider'] || '',
-      }));
+      mainInfo = rawMain.map((row: any) => {
+        const dateFormatted = formatDateString(row['날짜'] || row['일자'] || row['date'] || '');
+        const rawType = (row['예배유형'] || row['구분'] || row['serviceType'] || '').toString();
+        const isWed = rawType.includes('수요') || dateFormatted.includes('수요일') || dateFormatted.includes('수)');
+        const serviceTypeResolved = isWed ? '수요예배' : '주일예배';
+        const presider = (row['사회자'] || row['사회'] || row['presider'] || '').toString().trim();
+
+        return {
+          date: dateFormatted,
+          serviceType: serviceTypeResolved,
+          presider: presider,
+          prayer: (row['기도자'] || row['대표기도'] || row['prayer'] || '').toString().trim(),
+          offering: (row['봉헌위원'] || row['봉헌자'] || row['봉헌'] || row['offering'] || '').toString().trim(),
+          praiseLeader: (row['찬양인도자'] || row['찬양인도'] || row['praiseLeader'] || '').toString().trim(),
+          wedPresider: (row['수요사회자'] || row['수요사회'] || row['wedPresider'] || (isWed ? presider : '')).toString().trim(),
+        };
+      });
     }
   }
 
@@ -154,10 +167,18 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
     mainInfo = defaultData.mainInfo;
   }
 
-  const sundayMainRow = mainInfo.find(m => m.serviceType.includes('주일')) || mainInfo[0] || defaultData.mainInfo[0];
-  const sundayMainRows = mainInfo.filter(m => m.serviceType.includes('주일'));
+  const sundayMainRows = mainInfo.filter(m => {
+    const isWed = m.serviceType?.includes('수요') || m.date?.includes('수요일') || m.date?.includes('수)');
+    return !isWed;
+  });
+  const sundayMainRow = sundayMainRows[0] || mainInfo[0] || defaultData.mainInfo[0];
   const nextSundayMainRow = sundayMainRows[1] || sundayMainRow;
-  const wedMainRow = mainInfo.find(m => m.serviceType.includes('수요')) || mainInfo[1];
+
+  const wedMainRows = mainInfo.filter(m => {
+    return m.serviceType?.includes('수요') || m.date?.includes('수요일') || m.date?.includes('수)');
+  });
+  const wedMainRow = wedMainRows[0] || mainInfo.find(m => m.serviceType?.includes('수요')) || defaultData.mainInfo[0];
+  const nextWedMainRow = wedMainRows[1] || wedMainRow;
 
   // 2. Parse Officers List
   let officersList: WorshipOfficer[] = [];
@@ -168,7 +189,7 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
       { role: '대표 기도', currentWeekName: sundayMainRow.prayer || '-', nextWeekName: nextSundayMainRow?.prayer || '-' },
       { role: '봉헌 위원', currentWeekName: sundayMainRow.offering || '-', nextWeekName: nextSundayMainRow?.offering || '-' },
       { role: '찬양 인도자', currentWeekName: sundayMainRow.praiseLeader || '-', nextWeekName: nextSundayMainRow?.praiseLeader || '-' },
-      { role: '수요예배 사회', currentWeekName: wedMainRow?.presider || '-', nextWeekName: wedMainRow?.presider || '-' },
+      { role: '수요예배 사회', currentWeekName: wedMainRow?.presider || wedMainRow?.wedPresider || '-', nextWeekName: nextWedMainRow?.presider || nextWedMainRow?.wedPresider || '-' },
     ];
   } else {
     officersList = defaultData.officersList;

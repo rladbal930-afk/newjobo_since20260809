@@ -60,11 +60,11 @@ export const OfficersView: React.FC<OfficersViewProps> = ({ officers, mainRows }
                       )}
                       {formattedDate}
                     </td>
-                    <td className="p-3 text-slate-900">{isWednesday ? '' : row.presider}</td>
-                    <td className="p-3 text-indigo-900">{row.prayer}</td>
-                    <td className="p-3 text-slate-700">{row.offering}</td>
-                    <td className="p-3 text-emerald-900">{row.praiseLeader}</td>
-                    <td className="p-3 text-slate-700">{row.wedPresider || (isWednesday ? row.presider : '')}</td>
+                    <td className="p-3 text-slate-900">{isWednesday ? '-' : (row.presider || '-')}</td>
+                    <td className="p-3 text-indigo-900">{isWednesday ? '-' : (row.prayer || '-')}</td>
+                    <td className="p-3 text-slate-700">{isWednesday ? '-' : (row.offering || '-')}</td>
+                    <td className="p-3 text-emerald-900">{isWednesday ? '-' : (row.praiseLeader || '-')}</td>
+                    <td className="p-3 text-slate-700">{isWednesday ? (row.wedPresider || row.presider || '-') : '-'}</td>
                   </tr>
                 );
               })}
