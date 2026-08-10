@@ -21,6 +21,10 @@ export const defaultBulletinData: FullBulletinData = {
     { role: '찬양 인도자', currentWeekName: '로딩중...', nextWeekName: '로딩중...' },
     { role: '수요예배 사회', currentWeekName: '로딩중...', nextWeekName: '로딩중...' },
   ],
+  sundayCleaning: {
+    currentWeekName: '조미영 집사',
+    nextWeekName: '정주열 목사',
+  },
   bulletinContent: {
     serviceDate: '주일예배',
     serviceType: '주일예배',

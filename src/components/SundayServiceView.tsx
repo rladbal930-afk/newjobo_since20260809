@@ -5,6 +5,7 @@ import { Music, BookOpen, User, Volume2, ChevronDown, ChevronUp, Sparkles, Award
 interface SundayServiceViewProps {
   content: BulletinContent;
   officers: WorshipOfficer[];
+  sundayCleaning?: { currentWeekName: string; nextWeekName: string };
   mainRow?: MainSheetRow;
   onUpdateScripture?: (scriptureTitle: string, scriptureText: string) => void;
 }
@@ -19,6 +20,7 @@ export const openGospelApp = (songTitle: string) => {
 export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
   content,
   officers,
+  sundayCleaning,
   mainRow
 }) => {
   const [fontSize, setFontSize] = useState<'normal' | 'large' | 'xlarge'>('normal');
@@ -215,6 +217,11 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
                 <span className="font-medium text-slate-600">* 축도</span>
                 <span className="text-slate-900 font-medium">설교자</span>
               </div>
+
+              <div className="py-2.5 flex items-center justify-between">
+                <span className="font-medium text-slate-600">영상 & 교회 광고</span>
+                <span className="text-slate-900 font-medium">사회자</span>
+              </div>
             </div>
 
             <p className="text-xs text-slate-500 mt-4 text-right font-sans font-medium">
@@ -294,10 +301,30 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
                   <span className="font-semibold text-slate-600">{officer.role}</span>
                   <div className="text-right">
                     <span className="font-bold text-blue-950">{officer.currentWeekName}</span>
-                    <span className="text-slate-400 text-xs ml-2">(다음주: {officer.nextWeekName})</span>
+                    <span className="text-slate-400 text-xs ml-2">(다음주 예배위원: {officer.nextWeekName})</span>
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Sunday Sanctuary Cleaning */}
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+            <div className="sleek-section-title">
+              <Sparkles className="w-4 h-4 text-indigo-700" />
+              <span>주일 본당 청소</span>
+            </div>
+
+            <div className="space-y-2.5 text-xs sm:text-sm">
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                <span className="font-semibold text-slate-600">주일 본당 청소</span>
+                <div className="text-right">
+                  <span className="font-bold text-blue-950">{sundayCleaning?.currentWeekName || '조미영 집사'}</span>
+                  <span className="text-slate-400 text-xs ml-2">
+                    (다음주 본당 청소: {sundayCleaning?.nextWeekName || '-'})
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 

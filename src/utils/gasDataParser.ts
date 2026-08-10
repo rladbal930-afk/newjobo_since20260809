@@ -116,6 +116,7 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
       const prayerIdx = findIdx(['대표기도', '기도', 'prayer']);
       const offeringIdx = findIdx(['봉헌', 'offering']);
       const praiseLeaderIdx = findIdx(['찬양인도', '찬양', 'leader']);
+      const cleaningIdx = findIdx(['청소', '본당청소', '본당 청소', 'cleaning']);
 
       const dataRows = rawMain.slice(1);
       mainInfo = dataRows.map((row: any[]) => {
@@ -125,6 +126,7 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
         const prayer = prayerIdx !== -1 ? row[prayerIdx] : row[3];
         const offering = offeringIdx !== -1 ? row[offeringIdx] : row[4];
         const praiseLeader = praiseLeaderIdx !== -1 ? row[praiseLeaderIdx] : row[5];
+        const cleaningVal = cleaningIdx !== -1 ? row[cleaningIdx] : (row[6] || '');
 
         const dateFormatted = formatDateString(rawDate || '');
         const rawTypeStr = (rawType || '').toString().trim();
@@ -138,7 +140,8 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
           prayer: (prayer || '').toString().trim(),
           offering: (offering || '').toString().trim(),
           praiseLeader: (praiseLeader || '').toString().trim(),
-          wedPresider: isWed ? (presider || '').toString().trim() : ''
+          wedPresider: isWed ? (presider || '').toString().trim() : '',
+          cleaning: (cleaningVal || '').toString().trim(),
         };
       }).filter((m: MainSheetRow) => m.date || m.presider);
 
@@ -158,6 +161,7 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
           offering: (row['봉헌위원'] || row['봉헌자'] || row['봉헌'] || row['offering'] || '').toString().trim(),
           praiseLeader: (row['찬양인도자'] || row['찬양인도'] || row['praiseLeader'] || '').toString().trim(),
           wedPresider: (row['수요사회자'] || row['수요사회'] || row['wedPresider'] || (isWed ? presider : '')).toString().trim(),
+          cleaning: (row['청소'] || row['본당청소'] || row['주일 본당 청소'] || row['본당 청소'] || row['cleaning'] || '').toString().trim(),
         };
       });
     }
@@ -167,10 +171,42 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
     mainInfo = defaultData.mainInfo;
   }
 
+  // 1.5 Extract Cleaning Roster from '명단' Sheet (Column F / index 5)
+  let cleaningRoster: string[] = [];
+  if (Array.isArray(rawMembers) && rawMembers.length > 0) {
+    if (Array.isArray(rawMembers[0])) {
+      const headers: string[] = rawMembers[0].map((h: any) => (h || '').toString().trim());
+      const findIdx = (keywords: string[]) => headers.findIndex(h => keywords.some(k => h.includes(k)));
+      let cleanIdx = findIdx(['청소', '본당청소', '본당 청소', 'cleaning']);
+      if (cleanIdx === -1) cleanIdx = 5; // Column F (0-indexed 5: A=0, B=1, C=2, D=3, E=4, F=5)
+
+      const rows = rawMembers.slice(1);
+      cleaningRoster = rows
+        .map(r => (r[cleanIdx] || '').toString().trim())
+        .filter(name => name.length > 0 && !name.includes('청소') && !name.includes('명단'));
+    } else {
+      cleaningRoster = rawMembers
+        .map((row: any) => (row['주일 본당 청소'] || row['본당청소'] || row['본당 청소'] || row['청소'] || row['cleaning'] || row['F'] || row['f'] || '').toString().trim())
+        .filter(name => name.length > 0 && !name.includes('청소') && !name.includes('명단'));
+    }
+  }
+
+  if (cleaningRoster.length === 0) {
+    cleaningRoster = ['조미영 집사', '정주열 목사'];
+  }
+
   const sundayMainRows = mainInfo.filter(m => {
     const isWed = m.serviceType?.includes('수요') || m.date?.includes('수요일') || m.date?.includes('수)');
     return !isWed;
   });
+
+  // Assign or auto-rotate cleaning roster for each Sunday row
+  sundayMainRows.forEach((m, idx) => {
+    if (!m.cleaning) {
+      m.cleaning = cleaningRoster[idx % cleaningRoster.length];
+    }
+  });
+
   const sundayMainRow = sundayMainRows[0] || mainInfo[0] || defaultData.mainInfo[0];
   const nextSundayMainRow = sundayMainRows[1] || sundayMainRow;
 
@@ -354,11 +390,17 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
     archive = defaultData.archive;
   }
 
+  const sundayCleaning = {
+    currentWeekName: sundayMainRow?.cleaning || cleaningRoster[0] || '조미영 집사',
+    nextWeekName: nextSundayMainRow?.cleaning || (cleaningRoster.length > 1 ? cleaningRoster[1] : '정주열 목사'),
+  };
+
   return {
     lastUpdated: root.lastUpdated || new Date().toISOString().replace('T', ' ').substring(0, 19),
     mainServiceDate: sundayContent.serviceDate || sundayMainRow.date || defaultData.mainServiceDate,
     mainInfo: mainInfo.length > 0 ? mainInfo : defaultData.mainInfo,
     officersList: officersList.length > 0 ? officersList : defaultData.officersList,
+    sundayCleaning,
     bulletinContent: sundayContent,
     wednesdayBulletin: wednesdayContent,
     archive: archive.length > 0 ? archive : defaultData.archive,

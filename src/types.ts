@@ -46,6 +46,7 @@ export interface MainSheetRow {
   offering: string;
   praiseLeader: string;
   wedPresider: string;
+  cleaning?: string;
 }
 
 export interface FullBulletinData {
@@ -53,6 +54,7 @@ export interface FullBulletinData {
   mainServiceDate: string;
   mainInfo: MainSheetRow[];
   officersList: WorshipOfficer[];
+  sundayCleaning?: { currentWeekName: string; nextWeekName: string };
   bulletinContent: BulletinContent;
   wednesdayBulletin?: BulletinContent;
   archive: ArchiveRecord[];

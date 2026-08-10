@@ -38,7 +38,8 @@ export const OfficersView: React.FC<OfficersViewProps> = ({ officers, mainRows }
                 <th className="p-3">대표 기도</th>
                 <th className="p-3">봉헌 위원</th>
                 <th className="p-3">찬양 인도</th>
-                <th className="p-3 rounded-r-lg">수요 사회</th>
+                <th className="p-3">수요 사회</th>
+                <th className="p-3 rounded-r-lg">본당 청소</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
@@ -65,6 +66,7 @@ export const OfficersView: React.FC<OfficersViewProps> = ({ officers, mainRows }
                     <td className="p-3 text-slate-700">{isWednesday ? '-' : (row.offering || '-')}</td>
                     <td className="p-3 text-emerald-900">{isWednesday ? '-' : (row.praiseLeader || '-')}</td>
                     <td className="p-3 text-slate-700">{isWednesday ? (row.wedPresider || row.presider || '-') : '-'}</td>
+                    <td className="p-3 text-slate-700">{isWednesday ? '-' : (row.cleaning || '-')}</td>
                   </tr>
                 );
               })}

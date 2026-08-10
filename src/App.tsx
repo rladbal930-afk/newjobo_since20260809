@@ -217,6 +217,7 @@ export default function App() {
             <SundayServiceView
               content={bulletinData.bulletinContent}
               officers={bulletinData.officersList}
+              sundayCleaning={bulletinData.sundayCleaning}
               mainRow={
                 bulletinData.mainInfo.find(m => {
                   const isWed = m.serviceType?.includes('수요') || m.date?.includes('수요일') || m.date?.includes('수)');
