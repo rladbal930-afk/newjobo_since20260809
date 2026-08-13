@@ -132,6 +132,7 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
 
   const rawMain = root.main || root.mainInfo || root.mainSheet || [];
   const rawContent = root.content || root.bulletinContent || root.contentSheet || root.rawContent || [];
+  const rawNews = root.news || root.churchNews || root.newsSheet || root.churchNewsSheet || root.rawNews || [];
   const rawMembers = root.members || root.officers || root.officersList || [];
   const rawArchive = root.archive || root.archiveSheet || [];
 
@@ -372,7 +373,7 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
       }
     });
 
-    // Fallback B7 & B8 checking if rawContent is 2D array without matching headers
+    // Fallback B7 checking if rawContent is 2D array without matching headers
     if (Array.isArray(rawContent) && rawContent.length >= 7) {
       const row7 = rawContent[6]; // B7 cell (row index 6)
       if (Array.isArray(row7) && row7[1]) {
@@ -382,15 +383,32 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
         }
       }
     }
-    if (Array.isArray(rawContent) && rawContent.length >= 8) {
-      const row8 = rawContent[7]; // B8 cell (row index 7)
-      if (Array.isArray(row8) && row8[1]) {
-        const b8Val = row8[1].toString().trim();
-        if (b8Val && announcements.length === 0) {
-          const lines = b8Val.split('\n').map((s: string) => s.trim()).filter(Boolean);
-          announcements.push(...lines);
+
+    // Extract B8 to B25 from '교회소식' (rawNews or rawContent) for bulletin advertisements
+    const newsSource = (Array.isArray(rawNews) && rawNews.length > 0) ? rawNews : rawContent;
+    const b8to25Announcements: string[] = [];
+
+    if (Array.isArray(newsSource) && newsSource.length >= 8) {
+      const targetRows = newsSource.slice(7, 25); // Rows 8 through 25
+      targetRows.forEach((row: any) => {
+        let bVal = '';
+        if (Array.isArray(row)) {
+          bVal = (row[1] || '').toString().trim();
+        } else if (typeof row === 'object' && row !== null) {
+          bVal = (row['내용'] || row['곡명/내용'] || row['제목'] || row['title'] || row['B'] || row['b'] || row[1] || '').toString().trim();
         }
-      }
+        if (bVal && bVal !== '-' && bVal !== '로딩중...') {
+          const lines = bVal.split('\n').map((s: string) => s.trim()).filter(Boolean);
+          if (lines.length > 0) {
+            b8to25Announcements.push(...lines);
+          }
+        }
+      });
+    }
+
+    if (b8to25Announcements.length > 0) {
+      announcements.length = 0;
+      announcements.push(...b8to25Announcements);
     }
 
     if (prepSongs.length > 0 || otherPraiseSongs.length > 0) {
@@ -398,6 +416,7 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
     }
     if (announcements.length > 0) {
       sundayContent.announcements = announcements;
+      wednesdayContent.announcements = announcements;
     }
   }
 
