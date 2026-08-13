@@ -31,6 +31,41 @@ function formatDateString(dateStr: string): string {
   return dateStr;
 }
 
+function calculateWedPresider(dateStr: string, existing?: string): string {
+  let dayNum = 0;
+  if (dateStr) {
+    const match = dateStr.match(/(\d{1,2})일/);
+    if (match) {
+      dayNum = parseInt(match[1], 10);
+    } else {
+      const match2 = dateStr.match(/[\/\-](\d{1,2})(?:[\/\-\s]|$)/);
+      if (match2) {
+        dayNum = parseInt(match2[1], 10);
+      } else {
+        const d = new Date(dateStr);
+        if (!isNaN(d.getTime())) {
+          dayNum = d.getDate();
+        }
+      }
+    }
+  }
+
+  if (dayNum > 0) {
+    const weekNum = Math.ceil(dayNum / 7);
+    if (weekNum === 1) return '김유미 강도사';
+    if (weekNum === 2) return '정주열 목사';
+    if (weekNum === 3) return '연결';
+    if (weekNum === 4) return '정주열 목사';
+    if (weekNum >= 5) return '정주열 목사';
+  }
+
+  if (existing && existing.trim() && existing !== '-' && existing !== '로딩중...') {
+    return existing.trim();
+  }
+
+  return '정주열 목사';
+}
+
 export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinData> = {}): FullBulletinData {
   const defaultData: FullBulletinData = {
     lastUpdated: new Date().toISOString().replace('T', ' ').substring(0, 19),
@@ -133,14 +168,16 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
         const isWed = rawTypeStr.includes('수요') || dateFormatted.includes('수요일') || dateFormatted.includes('수)');
         const serviceTypeResolved = isWed ? '수요예배' : '주일예배';
 
+        const wedPresiderCalculated = isWed ? calculateWedPresider(dateFormatted, presider ? presider.toString() : '') : '';
+
         return {
           date: dateFormatted,
           serviceType: serviceTypeResolved,
-          presider: (presider || '').toString().trim(),
+          presider: isWed ? wedPresiderCalculated : (presider || '').toString().trim(),
           prayer: (prayer || '').toString().trim(),
           offering: (offering || '').toString().trim(),
           praiseLeader: (praiseLeader || '').toString().trim(),
-          wedPresider: isWed ? (presider || '').toString().trim() : '',
+          wedPresider: wedPresiderCalculated,
           cleaning: (cleaningVal || '').toString().trim(),
         };
       }).filter((m: MainSheetRow) => m.date || m.presider);
@@ -152,15 +189,16 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
         const isWed = rawType.includes('수요') || dateFormatted.includes('수요일') || dateFormatted.includes('수)');
         const serviceTypeResolved = isWed ? '수요예배' : '주일예배';
         const presider = (row['사회자'] || row['사회'] || row['presider'] || '').toString().trim();
+        const wedPresiderCalculated = isWed ? calculateWedPresider(dateFormatted, row['수요사회자'] || row['수요사회'] || row['wedPresider'] || presider) : '';
 
         return {
           date: dateFormatted,
           serviceType: serviceTypeResolved,
-          presider: presider,
+          presider: isWed ? wedPresiderCalculated : presider,
           prayer: (row['기도자'] || row['대표기도'] || row['prayer'] || '').toString().trim(),
           offering: (row['봉헌위원'] || row['봉헌자'] || row['봉헌'] || row['offering'] || '').toString().trim(),
           praiseLeader: (row['찬양인도자'] || row['찬양인도'] || row['praiseLeader'] || '').toString().trim(),
-          wedPresider: (row['수요사회자'] || row['수요사회'] || row['wedPresider'] || (isWed ? presider : '')).toString().trim(),
+          wedPresider: wedPresiderCalculated,
           cleaning: (row['청소'] || row['본당청소'] || row['주일 본당 청소'] || row['본당 청소'] || row['cleaning'] || '').toString().trim(),
         };
       });
@@ -200,9 +238,9 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
     return !isWed;
   });
 
-  // Assign or auto-rotate cleaning roster for each Sunday row
+  // Assign or auto-rotate cleaning roster for each Sunday row sequentially
   sundayMainRows.forEach((m, idx) => {
-    if (!m.cleaning) {
+    if (!m.cleaning || m.cleaning === '-' || m.cleaning === '로딩중...') {
       m.cleaning = cleaningRoster[idx % cleaningRoster.length];
     }
   });
@@ -213,6 +251,13 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
   const wedMainRows = mainInfo.filter(m => {
     return m.serviceType?.includes('수요') || m.date?.includes('수요일') || m.date?.includes('수)');
   });
+
+  // Calculate Wednesday presider according to N-th Wednesday of the month rules
+  wedMainRows.forEach(m => {
+    m.wedPresider = calculateWedPresider(m.date, m.wedPresider || m.presider);
+    m.presider = m.wedPresider;
+  });
+
   const wedMainRow = wedMainRows[0] || mainInfo.find(m => m.serviceType?.includes('수요')) || defaultData.mainInfo[0];
   const nextWedMainRow = wedMainRows[1] || wedMainRow;
 
