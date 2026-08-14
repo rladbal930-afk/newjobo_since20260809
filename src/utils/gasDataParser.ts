@@ -365,10 +365,7 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
         if (value) sundayContent.preacher = value;
       } else if (key.includes('광고') || key.includes('소식') || key.toLowerCase().includes('b8')) {
         if (value) {
-          const lines = value.split('\n').map(s => s.trim()).filter(Boolean);
-          if (lines.length > 0) {
-            announcements.push(...lines);
-          }
+          announcements.push(value.trim());
         }
       }
     });
@@ -389,19 +386,32 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
     const b8to25Announcements: string[] = [];
 
     if (Array.isArray(newsSource) && newsSource.length >= 8) {
-      const targetRows = newsSource.slice(7, 25); // Rows 8 through 25
+      const targetRows = newsSource.slice(7, 25); // Rows 8 through 25 (0-indexed 7 to 24)
       targetRows.forEach((row: any) => {
         let bVal = '';
         if (Array.isArray(row)) {
-          bVal = (row[1] || '').toString().trim();
+          bVal = (row[1] !== undefined ? row[1] : (row[0] || '')).toString().trim();
         } else if (typeof row === 'object' && row !== null) {
           bVal = (row['내용'] || row['곡명/내용'] || row['제목'] || row['title'] || row['B'] || row['b'] || row[1] || '').toString().trim();
+        } else if (typeof row === 'string') {
+          bVal = row.trim();
         }
         if (bVal && bVal !== '-' && bVal !== '로딩중...') {
-          const lines = bVal.split('\n').map((s: string) => s.trim()).filter(Boolean);
-          if (lines.length > 0) {
-            b8to25Announcements.push(...lines);
-          }
+          b8to25Announcements.push(bVal);
+        }
+      });
+    } else if (Array.isArray(newsSource) && newsSource.length > 0) {
+      newsSource.forEach((row: any) => {
+        let bVal = '';
+        if (Array.isArray(row)) {
+          bVal = (row[1] !== undefined ? row[1] : (row[0] || '')).toString().trim();
+        } else if (typeof row === 'object' && row !== null) {
+          bVal = (row['내용'] || row['곡명/내용'] || row['제목'] || row['title'] || row['광고'] || row['소식'] || row['B'] || row['b'] || row[1] || '').toString().trim();
+        } else if (typeof row === 'string') {
+          bVal = row.trim();
+        }
+        if (bVal && bVal !== '-' && bVal !== '로딩중...' && !bVal.startsWith('구분') && !bVal.startsWith('순서')) {
+          b8to25Announcements.push(bVal);
         }
       });
     }

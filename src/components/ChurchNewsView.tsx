@@ -41,7 +41,7 @@ export const ChurchNewsView: React.FC<ChurchNewsViewProps> = ({ announcements })
                 <span className="shrink-0 w-6 h-6 rounded-md bg-blue-950 text-white font-bold text-xs flex items-center justify-center mt-0.5 shadow-xs">
                   {idx + 1}
                 </span>
-                <div className="text-sm text-slate-800 leading-relaxed pt-0.5 whitespace-pre-line">
+                <div className="text-sm text-slate-800 leading-relaxed pt-0.5 whitespace-pre-line break-words flex-1">
                   {news}
                 </div>
               </div>

@@ -138,9 +138,9 @@ export const PrintBulletin: React.FC<PrintBulletinProps> = ({ churchName, conten
         {/* Announcements Section on Print */}
         <div className="pt-3 border-t-2 border-slate-900 space-y-1">
           <h3 className="font-bold text-sm font-sans">[ 교회 소식 ]</h3>
-          <ul className="list-disc list-inside text-xs space-y-0.5">
+          <ul className="list-disc list-inside text-xs space-y-1">
             {content.announcements.map((news, i) => (
-              <li key={i}>{news}</li>
+              <li key={i} className="whitespace-pre-line leading-relaxed">{news}</li>
             ))}
           </ul>
         </div>
