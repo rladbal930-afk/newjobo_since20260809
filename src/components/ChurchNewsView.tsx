@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, Calendar, CreditCard } from 'lucide-react';
+import { Bell, Calendar, CreditCard, Instagram, Youtube } from 'lucide-react';
 
 interface ChurchNewsViewProps {
   announcements: string[];
@@ -107,6 +107,35 @@ export const ChurchNewsView: React.FC<ChurchNewsViewProps> = ({ announcements })
               </p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* SNS Section */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col items-center justify-center space-y-3">
+        <h3 className="text-xs font-bold text-slate-500 tracking-wider">SNS</h3>
+        <div className="flex items-center justify-center gap-4">
+          <a
+            id="sns-instagram-link"
+            href="https://www.instagram.com/a_happy_person25920"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white flex items-center justify-center shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+            title="Instagram (@a_happy_person25920)"
+            aria-label="Instagram (@a_happy_person25920)"
+          >
+            <Instagram className="w-6 h-6" />
+          </a>
+          <a
+            id="sns-youtube-link"
+            href="https://youtube.com/channel/UCRxHj19jHtLlae26n36sZuQ?si=ABZzRZnoSQWXQnWh"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-12 h-12 rounded-2xl bg-[#FF0000] text-white flex items-center justify-center shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+            title="YouTube 채널 바로가기"
+            aria-label="YouTube 채널 바로가기"
+          >
+            <Youtube className="w-6 h-6" />
+          </a>
         </div>
       </div>
     </div>
