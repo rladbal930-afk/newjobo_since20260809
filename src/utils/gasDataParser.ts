@@ -341,20 +341,15 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
           title: value.trim() ? value : '목사님 전체 찬양 곡 명 적어주세요',
           songNumber: detail || '전체찬송',
         });
-      } else if (key.includes('성경본문') || key.includes('성경') || key.includes('본문') || key.includes('구절') || key.toLowerCase().includes('b7')) {
+      } else if (key.includes('본문 내용') || key.includes('본문내용') || key.includes('말씀내용') || key.includes('말씀 내용') || key.includes('본문 텍스트') || key.includes('본문전문') || key.toLowerCase().includes('b7')) {
         if (value) {
-          if (detail) {
-            sundayContent.scripture = value;
+          sundayContent.scriptureText = value;
+        }
+      } else if (key.includes('성경본문') || key.includes('성경구절') || key.includes('성경') || key.includes('구절') || key.toLowerCase().includes('b6')) {
+        if (value) {
+          sundayContent.scripture = value;
+          if (detail && !sundayContent.scriptureText) {
             sundayContent.scriptureText = detail;
-          } else {
-            sundayContent.scriptureText = value;
-            const rawFirstLine = value.split('\n')[0].trim();
-            const cleanRef = rawFirstLine.replace(/[<>]/g, '').trim();
-            if (cleanRef && cleanRef.length < 40) {
-              sundayContent.scripture = cleanRef;
-            } else if (!sundayContent.scripture || sundayContent.scripture === '로딩중...') {
-              sundayContent.scripture = '성경 본문';
-            }
           }
         }
       } else if (key.includes('설교제목') || key.includes('말씀제목')) {
@@ -368,12 +363,17 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
       }
     });
 
-    // Fallback B7 checking if rawContent is 2D array without matching headers
-    if (Array.isArray(rawContent) && rawContent.length >= 7) {
-      const row7 = rawContent[6]; // B7 cell (row index 6)
-      if (Array.isArray(row7) && row7[1]) {
-        const b7Val = row7[1].toString().trim();
-        if (b7Val) {
+    // Exact cell index overrides for 2D array representation: B6 (row index 5) and B7 (row index 6)
+    if (Array.isArray(rawContent)) {
+      if (rawContent.length >= 6 && Array.isArray(rawContent[5])) {
+        const b6Val = (rawContent[5][1] || '').toString().trim();
+        if (b6Val && b6Val !== '-' && b6Val !== '로딩중...') {
+          sundayContent.scripture = b6Val;
+        }
+      }
+      if (rawContent.length >= 7 && Array.isArray(rawContent[6])) {
+        const b7Val = (rawContent[6][1] || '').toString().trim();
+        if (b7Val && b7Val !== '-' && b7Val !== '로딩중...') {
           sundayContent.scriptureText = b7Val;
         }
       }
