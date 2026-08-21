@@ -167,7 +167,7 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
               <div className="py-2.5 flex items-center justify-between">
                 <span className="font-medium text-slate-600">* 개회 찬송</span>
                 <span className="text-slate-900 font-bold text-right">
-                  {otherPraiseSongs.find(s => s.category === '개회찬송')?.title || '찬송가 21장 (다 찬양하여라)'}
+                  {otherPraiseSongs.find(s => s.category === '개회찬송')?.title || '로딩중...'}
                 </span>
               </div>
 
@@ -184,7 +184,7 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
               <div className="py-2.5 flex items-center justify-between">
                 <span className="font-medium text-slate-600">* 전체 찬양</span>
                 <span className="text-slate-900 font-bold text-right">
-                  {otherPraiseSongs.find(s => s.category === '전체찬송')?.title || '찬송가 301장 (다같이)'}
+                  {otherPraiseSongs.find(s => s.category === '전체찬송')?.title || '로딩중...'}
                 </span>
               </div>
 

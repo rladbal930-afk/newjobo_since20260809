@@ -64,7 +64,7 @@ export const PrintBulletin: React.FC<PrintBulletinProps> = ({ churchName, conten
               </div>
               <div className="flex justify-between border-b border-slate-200 pb-0.5">
                 <span>* 개회 찬송</span>
-                <span className="font-bold">{otherPraise.find(s => s.category === '개회찬송')?.title || '찬송가 21장'}</span>
+                <span className="font-bold">{otherPraise.find(s => s.category === '개회찬송')?.title || '로딩중...'}</span>
               </div>
               <div className="flex justify-between border-b border-slate-200 pb-0.5">
                 <span>* 교독문</span>
@@ -76,7 +76,7 @@ export const PrintBulletin: React.FC<PrintBulletinProps> = ({ churchName, conten
               </div>
               <div className="flex justify-between border-b border-slate-200 pb-0.5">
                 <span>* 전체 찬양</span>
-                <span className="font-bold">{otherPraise.find(s => s.category === '전체찬송')?.title || '찬송가 301장'}</span>
+                <span className="font-bold">{otherPraise.find(s => s.category === '전체찬송')?.title || '로딩중...'}</span>
               </div>
               <div className="flex justify-between border-b border-slate-200 pb-0.5">
                 <span>성경 봉독</span>

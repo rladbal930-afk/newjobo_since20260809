@@ -100,6 +100,8 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
       scriptureText: '구글 시트에서 주보 데이터를 불러오는 중입니다 (로딩중...)',
       praiseSongs: [
         { category: '준비찬양', songNumber: '준비찬양 1', title: '로딩중...' },
+        { category: '개회찬송', songNumber: '개회찬송', title: '로딩중...' },
+        { category: '전체찬송', songNumber: '전체찬송', title: '로딩중...' },
       ],
       announcements: [
         '구글 시트에서 교회 소식을 불러오는 중입니다 (로딩중...)',

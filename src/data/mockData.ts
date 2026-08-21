@@ -40,6 +40,16 @@ export const defaultBulletinData: FullBulletinData = {
         category: '준비찬양',
         title: '로딩중...',
         songNumber: '준비찬양 1',
+      },
+      {
+        category: '개회찬송',
+        title: '로딩중...',
+        songNumber: '개회찬송',
+      },
+      {
+        category: '전체찬송',
+        title: '로딩중...',
+        songNumber: '전체찬송',
       }
     ],
     offeringServant: '로딩중...',
