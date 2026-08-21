@@ -32,9 +32,31 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
   const heroPrayer = mainRow?.prayer || content.prayer || '로딩중...';
   const heroOffering = mainRow?.offering || content.offeringServant || '로딩중...';
 
-  // Extract praise songs by category
-  const prepPraiseSongs = content.praiseSongs.filter(s => s.category === '준비찬양');
+  // Extract praise songs by category with requested fallback messages
+  const defaultPrepSongs = [
+    { category: '준비찬양' as const, songNumber: '곡명 1', title: '찬양단 준비찬양 곡명 적어주세요' },
+    { category: '준비찬양' as const, songNumber: '곡명 2', title: '찬양단 준비찬양 곡명 적어주세요' },
+    { category: '준비찬양' as const, songNumber: '곡명 3', title: '찬양단 준비찬양 곡명 적어주세요' },
+  ];
+
+  const rawPrepSongs = content.praiseSongs.filter(s => s.category === '준비찬양');
+  const prepPraiseSongs = (rawPrepSongs.length > 0 ? rawPrepSongs : defaultPrepSongs).map((s, idx) => ({
+    ...s,
+    songNumber: s.songNumber || `곡명 ${idx + 1}`,
+    title: (s.title && s.title.trim() && s.title !== '로딩중...') ? s.title : '찬양단 준비찬양 곡명 적어주세요'
+  }));
+
   const otherPraiseSongs = content.praiseSongs.filter(s => s.category !== '준비찬양');
+
+  const openingHymnRaw = otherPraiseSongs.find(s => s.category === '개회찬송')?.title;
+  const openingHymn = (openingHymnRaw && openingHymnRaw.trim() && openingHymnRaw !== '로딩중...')
+    ? openingHymnRaw
+    : '총무님 개회찬송 곡 명 적어주세요';
+
+  const congregationalPraiseRaw = otherPraiseSongs.find(s => s.category === '전체찬송')?.title;
+  const congregationalPraise = (congregationalPraiseRaw && congregationalPraiseRaw.trim() && congregationalPraiseRaw !== '로딩중...')
+    ? congregationalPraiseRaw
+    : '목사님 전체 찬양 곡 명 적어주세요';
 
   // Helper to extract clean scripture title
   const getScriptureTitle = () => {
@@ -167,7 +189,7 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
               <div className="py-2.5 flex items-center justify-between">
                 <span className="font-medium text-slate-600">* 개회 찬송</span>
                 <span className="text-slate-900 font-bold text-right">
-                  {otherPraiseSongs.find(s => s.category === '개회찬송')?.title || '로딩중...'}
+                  {openingHymn}
                 </span>
               </div>
 
@@ -184,7 +206,7 @@ export const SundayServiceView: React.FC<SundayServiceViewProps> = ({
               <div className="py-2.5 flex items-center justify-between">
                 <span className="font-medium text-slate-600">* 전체 찬양</span>
                 <span className="text-slate-900 font-bold text-right">
-                  {otherPraiseSongs.find(s => s.category === '전체찬송')?.title || '로딩중...'}
+                  {congregationalPraise}
                 </span>
               </div>
 

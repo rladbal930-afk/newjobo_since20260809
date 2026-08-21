@@ -38,17 +38,27 @@ export const defaultBulletinData: FullBulletinData = {
     praiseSongs: [
       {
         category: '준비찬양',
-        title: '로딩중...',
+        title: '찬양단 준비찬양 곡명 적어주세요',
         songNumber: '준비찬양 1',
       },
       {
+        category: '준비찬양',
+        title: '찬양단 준비찬양 곡명 적어주세요',
+        songNumber: '준비찬양 2',
+      },
+      {
+        category: '준비찬양',
+        title: '찬양단 준비찬양 곡명 적어주세요',
+        songNumber: '준비찬양 3',
+      },
+      {
         category: '개회찬송',
-        title: '로딩중...',
+        title: '총무님 개회찬송 곡 명 적어주세요',
         songNumber: '개회찬송',
       },
       {
         category: '전체찬송',
-        title: '로딩중...',
+        title: '목사님 전체 찬양 곡 명 적어주세요',
         songNumber: '전체찬송',
       }
     ],

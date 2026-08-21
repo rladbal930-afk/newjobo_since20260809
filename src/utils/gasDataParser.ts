@@ -99,9 +99,11 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
       scripture: '성경 본문',
       scriptureText: '구글 시트에서 주보 데이터를 불러오는 중입니다 (로딩중...)',
       praiseSongs: [
-        { category: '준비찬양', songNumber: '준비찬양 1', title: '로딩중...' },
-        { category: '개회찬송', songNumber: '개회찬송', title: '로딩중...' },
-        { category: '전체찬송', songNumber: '전체찬송', title: '로딩중...' },
+        { category: '준비찬양', songNumber: '준비찬양 1', title: '찬양단 준비찬양 곡명 적어주세요' },
+        { category: '준비찬양', songNumber: '준비찬양 2', title: '찬양단 준비찬양 곡명 적어주세요' },
+        { category: '준비찬양', songNumber: '준비찬양 3', title: '찬양단 준비찬양 곡명 적어주세요' },
+        { category: '개회찬송', songNumber: '개회찬송', title: '총무님 개회찬송 곡 명 적어주세요' },
+        { category: '전체찬송', songNumber: '전체찬송', title: '목사님 전체 찬양 곡 명 적어주세요' },
       ],
       announcements: [
         '구글 시트에서 교회 소식을 불러오는 중입니다 (로딩중...)',
@@ -321,30 +323,24 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
       if (!key && !value) return;
 
       if (key.includes('곡명') || key.includes('준비찬양') || key.includes('준비')) {
-        if (value) {
-          prepSongs.push({
-            category: '준비찬양',
-            title: value,
-            songNumber: key,
-            notes: detail
-          });
-        }
+        prepSongs.push({
+          category: '준비찬양',
+          title: value.trim() ? value : '찬양단 준비찬양 곡명 적어주세요',
+          songNumber: key || `준비찬양 ${prepSongs.length + 1}`,
+          notes: detail
+        });
       } else if (key.includes('개회찬송') || key.includes('개회')) {
-        if (value) {
-          otherPraiseSongs.push({
-            category: '개회찬송',
-            title: value,
-            songNumber: detail || '개회찬송',
-          });
-        }
+        otherPraiseSongs.push({
+          category: '개회찬송',
+          title: value.trim() ? value : '총무님 개회찬송 곡 명 적어주세요',
+          songNumber: detail || '개회찬송',
+        });
       } else if (key.includes('전체찬양') || key.includes('전체찬송') || key.includes('전체')) {
-        if (value) {
-          otherPraiseSongs.push({
-            category: '전체찬송',
-            title: value,
-            songNumber: detail || '전체찬송',
-          });
-        }
+        otherPraiseSongs.push({
+          category: '전체찬송',
+          title: value.trim() ? value : '목사님 전체 찬양 곡 명 적어주세요',
+          songNumber: detail || '전체찬송',
+        });
       } else if (key.includes('성경본문') || key.includes('성경') || key.includes('본문') || key.includes('구절') || key.toLowerCase().includes('b7')) {
         if (value) {
           if (detail) {
@@ -423,9 +419,32 @@ export function parseGasResponse(json: any, fallbackData: Partial<FullBulletinDa
       announcements.push(...b8to25Announcements);
     }
 
-    if (prepSongs.length > 0 || otherPraiseSongs.length > 0) {
-      sundayContent.praiseSongs = [...prepSongs, ...otherPraiseSongs];
+    // Ensure default prep songs if none were found
+    if (prepSongs.length === 0) {
+      prepSongs.push(
+        { category: '준비찬양', songNumber: '준비찬양 1', title: '찬양단 준비찬양 곡명 적어주세요' },
+        { category: '준비찬양', songNumber: '준비찬양 2', title: '찬양단 준비찬양 곡명 적어주세요' },
+        { category: '준비찬양', songNumber: '준비찬양 3', title: '찬양단 준비찬양 곡명 적어주세요' },
+      );
     }
+
+    // Ensure opening hymn & congregational praise
+    if (!otherPraiseSongs.some(s => s.category === '개회찬송')) {
+      otherPraiseSongs.push({
+        category: '개회찬송',
+        songNumber: '개회찬송',
+        title: '총무님 개회찬송 곡 명 적어주세요',
+      });
+    }
+    if (!otherPraiseSongs.some(s => s.category === '전체찬송')) {
+      otherPraiseSongs.push({
+        category: '전체찬송',
+        songNumber: '전체찬송',
+        title: '목사님 전체 찬양 곡 명 적어주세요',
+      });
+    }
+
+    sundayContent.praiseSongs = [...prepSongs, ...otherPraiseSongs];
     if (announcements.length > 0) {
       sundayContent.announcements = announcements;
       wednesdayContent.announcements = announcements;
